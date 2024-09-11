@@ -10,6 +10,8 @@ import {
   Pressable,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import CustomTextInput from "../CustomTextInput";
+import CustomButton from "../CustomButton";
 // Stack Navigator için olası rota isimlerini tanımlıyoruz
 type RootStackParamList = {
   Login: undefined;
@@ -17,50 +19,43 @@ type RootStackParamList = {
 };
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
-const LoginPage = ({ navigation }:Props) => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+const LoginPage = ({ navigation }: Props) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [result, setResult] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  console.log(firstName);
   return (
     <View style={styles.container}>
+      <Text style={styles.welcome}>Login {result}</Text>
+
       <Image
         source={require("../../assets/images/login.png")}
         style={styles.image}
       />
 
-      <Text style={styles.welcome}>Login {result}</Text>
-
-      <Text>Email</Text>
-      <TextInput
-        inputMode="email"
-        style={styles.textInputStyles}
-        placeholder="Enter Your Email"
-        value={firstName}
-        /**onChangeText için de birden fazla yapı tanımlayacak isek aşağıdaki gibi tanımlamamız gerekiyor */
-        onChangeText={(value) => setFirstName(value)}
-      />
-      <Text>Password</Text>
-      <TextInput
-        secureTextEntry={true}
-        style={styles.textInputStyles}
-        placeholder="Enter Your Password"
-        value={lastName}
-        /**onChnageText içinde sadece bir yapı var ise sadece ismini yazmamız yeterli */
-        onChangeText={setLastName}
+      <CustomTextInput
+        title="Email"
+        isSecureText={false}
+        handleOnChangeText={setEmail}
+        handleValue={email}
+        handlePlaceHolder={"Enter Your Email"}
       />
 
-      <Pressable
-        onPress={() => setIsLoading(true)}
-        style={({ pressed }) => [
-          { backgroundColor: pressed ? "#007bff" : "lightblue" },
-          styles.button,
-        ]}
-      >
-        <Text style={styles.buttonText}>Save</Text>
-      </Pressable>
+      <CustomTextInput
+        title="Password"
+        isSecureText={true}
+        handleOnChangeText={setPassword}
+        handleValue={password}
+        handlePlaceHolder={"Enter Your Password"}
+      />
+
+      <CustomButton
+        buttonText="Login"
+        handleOnPress={() => setIsLoading(false)}
+        buttonColor="#5fa2ea"
+        pressedButtonColor="#007bff"
+      />
 
       <Pressable onPress={() => navigation.navigate("SignUp")}>
         <Text style={styles.signText}>Sign Up</Text>
@@ -77,43 +72,25 @@ export default LoginPage;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "tomato",
     alignItems: "center",
     justifyContent: "center",
   },
-  textInputStyles: {
-    borderWidth: 1,
-    width: "80%",
-    height: 50,
-    borderRadius: 10,
-    marginVertical: 10,
-    textAlign: "center",
-  },
 
-  button: {
-    width: "80%",
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 10,
-  },
-
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
   image: {
     height: 150,
     width: 150,
   },
 
   welcome: {
-    fontSize: 22,
+    fontSize: 30,
     fontWeight: "bold",
+    marginBottom: 30,
+    color: "#fff",
   },
   signText: {
-    marginTop: 5,
-    color: "#007bff",
+    marginTop: 15,
+    color: "#fff",
     fontSize: 16,
     position: "absolute",
     left: 80,
