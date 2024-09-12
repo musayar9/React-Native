@@ -4,7 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import AuthStack from "./AuthStack";
 import UserStack from "./UserStack";
 import { useAppSelector } from "@/redux/hooks";
-
+import app from "@/firebaseConfig";
 
 const RootNavigation = () => {
 
