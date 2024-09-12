@@ -1,7 +1,7 @@
-import { store } from "@/redux/store";
+
 import { ScrollViewStyleReset } from "expo-router/html";
 import { type PropsWithChildren } from "react";
-import { Provider } from "react-redux";
+
 
 /**
  * This file is web-only and used to configure the root HTML for every web page during static rendering.
@@ -29,7 +29,7 @@ export default function Root({ children }: PropsWithChildren) {
         {/* Add any additional <head> elements that you want globally available on web... */}
       </head>
       <body>
-        <Provider store={store}>{children}</Provider>
+      {children}
       </body>
     </html>
   );

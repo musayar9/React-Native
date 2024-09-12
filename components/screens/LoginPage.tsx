@@ -1,18 +1,12 @@
 import Loading from "@/app/loading";
-import { useState } from "react";
-import {
-  Image,
-  StyleSheet,
-  Platform,
-  View,
-  Text,
-  TextInput,
-  Pressable,
-} from "react-native";
+
+import { Image, StyleSheet, View, Text, Pressable } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import CustomTextInput from "../CustomTextInput";
 import CustomButton from "../CustomButton";
-// Stack Navigator için olası rota isimlerini tanımlıyoruz
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { setEmail, setIsLoading, setLogin, setPassword } from "@/redux/userSlice";
+
 type RootStackParamList = {
   Login: undefined;
   SignUp: undefined;
@@ -20,14 +14,12 @@ type RootStackParamList = {
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 const LoginPage = ({ navigation }: Props) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [result, setResult] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const { email, password, isLoading } = useAppSelector((state) => state.user);
+  const dispatch = useAppDispatch();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.welcome}>Login {result}</Text>
+      <Text style={styles.welcome}>Login</Text>
 
       <Image
         source={require("../../assets/images/login.png")}
@@ -37,22 +29,22 @@ const LoginPage = ({ navigation }: Props) => {
       <CustomTextInput
         title="Email"
         isSecureText={false}
-        handleOnChangeText={setEmail}
-        handleValue={email}
+        handleOnChangeText={(text) => dispatch(setEmail(text))}
+        handleValue={email ?? ""}
         handlePlaceHolder={"Enter Your Email"}
       />
 
       <CustomTextInput
         title="Password"
         isSecureText={true}
-        handleOnChangeText={setPassword}
-        handleValue={password}
+        handleOnChangeText={(password) => dispatch(setPassword(password))}
+        handleValue={password ?? ""}
         handlePlaceHolder={"Enter Your Password"}
       />
 
       <CustomButton
         buttonText="Login"
-        handleOnPress={() => setIsLoading(false)}
+        handleOnPress={() => dispatch(setLogin())}
         buttonColor="#5fa2ea"
         pressedButtonColor="#007bff"
       />
@@ -62,7 +54,7 @@ const LoginPage = ({ navigation }: Props) => {
       </Pressable>
 
       {isLoading ? (
-        <Loading changeIsLoading={() => setIsLoading(false)} />
+        <Loading changeIsLoading={() => dispatch(setIsLoading(false))} />
       ) : null}
     </View>
   );

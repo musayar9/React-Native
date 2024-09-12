@@ -5,7 +5,7 @@ interface CustomInputTextProps {
   title: string;
   isSecureText: boolean;
   handleOnChangeText: (text: string) => void;
-  handleValue: string;
+  handleValue: string | undefined;
   handlePlaceHolder: string;
 }
 
