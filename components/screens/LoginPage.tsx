@@ -32,7 +32,7 @@ const LoginPage = ({ navigation }: Props) => {
       <CustomTextInput
         title="Email"
         isSecureText={false}
-        handleOnChangeText={(text) => setEmail(text)}
+        handleOnChangeText={(text) => setEmail(text.toLowerCase())}
         handleValue={email ?? ""}
         handlePlaceHolder={"Enter Your Email"}
       />
