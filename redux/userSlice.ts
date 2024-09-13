@@ -36,8 +36,7 @@ interface FirebaseUserWithToken extends User {
 );
 
 interface initialStateType {
-  email: null | string;
-  password: null | string;
+
   isLoading: boolean;
   isAuth: boolean;
   token: null | string;
@@ -46,8 +45,7 @@ interface initialStateType {
 }
 
 const initialState: initialStateType = {
-  email: "",
-  password: "",
+
   isLoading: false,
   isAuth: false,
   token: null,
@@ -59,13 +57,13 @@ export const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setEmail: (state, action) => {
-      const lowerCaseEmail = action.payload.toLowerCase();
-      state.email = lowerCaseEmail;
-    },
-    setPassword: (state, action) => {
-      state.password = action.payload;
-    },
+    // setEmail: (state, action) => {
+    //   const lowerCaseEmail = action.payload.toLowerCase();
+    //   state.email = lowerCaseEmail;
+    // },
+    // setPassword: (state, action) => {
+    //   state.password = action.payload;
+    // },
     setIsLoading: (state, action) => {
       state.isLoading = action.payload;
     },
@@ -90,7 +88,7 @@ export const userSlice = createSlice({
   },
 });
 
-export const { setEmail, setPassword, setIsLoading } =
+export const {  setIsLoading } =
   userSlice.actions;
 
 export default userSlice.reducer;

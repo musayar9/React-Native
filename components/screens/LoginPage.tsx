@@ -5,7 +5,8 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import CustomTextInput from "../CustomTextInput";
 import CustomButton from "../CustomButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { login, setEmail, setIsLoading, setPassword } from "@/redux/userSlice";
+import { login, setIsLoading } from "@/redux/userSlice";
+import { useState } from "react";
 
 type RootStackParamList = {
   Login: undefined;
@@ -14,7 +15,9 @@ type RootStackParamList = {
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 const LoginPage = ({ navigation }: Props) => {
-  const { email, password, isLoading } = useAppSelector((state) => state.user);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { isLoading, error } = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
 
   return (
@@ -29,7 +32,7 @@ const LoginPage = ({ navigation }: Props) => {
       <CustomTextInput
         title="Email"
         isSecureText={false}
-        handleOnChangeText={(text) => dispatch(setEmail(text))}
+        handleOnChangeText={(text) => setEmail(text)}
         handleValue={email ?? ""}
         handlePlaceHolder={"Enter Your Email"}
       />
@@ -37,11 +40,11 @@ const LoginPage = ({ navigation }: Props) => {
       <CustomTextInput
         title="Password"
         isSecureText={true}
-        handleOnChangeText={(password) => dispatch(setPassword(password))}
+        handleOnChangeText={(password) => setPassword(password)}
         handleValue={password ?? ""}
         handlePlaceHolder={"Enter Your Password"}
       />
-
+      <Text>{error}</Text>
       <CustomButton
         buttonText="Login"
         handleOnPress={() =>
