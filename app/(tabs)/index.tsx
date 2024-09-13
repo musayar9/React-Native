@@ -1,11 +1,12 @@
 import React from "react";
 
-import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { LoginPage, SignUpPage } from "@/components/screens";
+
 import { Provider } from "react-redux";
 import { store } from "@/redux/store";
+
 import RootNavigation from "@/navigation/RootNavigation";
+import  "@/firebaseConfig";
 type HomeScreenProps = {
   Login: undefined;
   SignUp: undefined;
@@ -21,7 +22,7 @@ const HomeScreen = () => {
           <Stack.Screen name="SignUp" component={SignUpPage} />
         </Stack.Navigator>
       </NavigationContainer> */}
-      <RootNavigation/>
+      <RootNavigation />
     </Provider>
   );
 };

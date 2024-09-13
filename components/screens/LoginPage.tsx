@@ -5,7 +5,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import CustomTextInput from "../CustomTextInput";
 import CustomButton from "../CustomButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { setEmail, setIsLoading, setLogin, setPassword } from "@/redux/userSlice";
+import { login, setEmail, setIsLoading, setPassword } from "@/redux/userSlice";
 
 type RootStackParamList = {
   Login: undefined;
@@ -44,7 +44,11 @@ const LoginPage = ({ navigation }: Props) => {
 
       <CustomButton
         buttonText="Login"
-        handleOnPress={() => dispatch(setLogin())}
+        handleOnPress={() =>
+          dispatch(
+            login({ username: email as string, password: password as string })
+          )
+        }
         buttonColor="#5fa2ea"
         pressedButtonColor="#007bff"
       />
