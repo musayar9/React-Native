@@ -50,7 +50,7 @@ const LoginPage = ({ navigation }: Props) => {
         handlePlaceHolder={"Enter Your Password"}
       />
       <Text>
-        {typeof error === "string" ? error : "Bilinmeyen bir hata oluştu"}
+        {typeof error === "string" ? error : ""}
       </Text>
       <CustomButton
         buttonText="Login"
@@ -84,8 +84,8 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    height: 150,
-    width: 150,
+    height: 100,
+    width: 100,
   },
 
   welcome: {

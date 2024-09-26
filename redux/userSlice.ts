@@ -1,7 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
+  createUserWithEmailAndPassword,
   getAuth,
+  sendEmailVerification,
   signInWithEmailAndPassword,
   signOut,
   User,
@@ -71,6 +73,31 @@ export const logout = createAsyncThunk("user/logout", async () => {
     throw error;
   }
 });
+
+export const register = createAsyncThunk(
+  "user/register",
+  async ({ email, password }: { email: string; password: string }) => {
+    try {
+      const auth = getAuth();
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      const user = userCredential.user;
+      console.log("user", user)
+       const token = (user as any).stsTokenManager.accessToken; // Hata ile başa çıkmak için 'any' tipi
+
+      await sendEmailVerification(user);
+      await AsyncStorage.setItem("userToken", token);
+
+      return token;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
 
 interface initialStateType {
   isLoading: boolean;
@@ -143,6 +170,19 @@ export const userSlice = createSlice({
       })
       .addCase(logout.rejected, (state, action) => {
         (state.isLoading = false), (state.error = action.payload);
+      })
+      .addCase(register.pending, (state) => {
+        state.isLoading = true;
+        state.isAuth = false;
+      })
+      .addCase(register.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isAuth = true;
+        state.token = action.payload;
+      })
+      .addCase(register.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = "Invalid Email Or Password";
       });
   },
 });

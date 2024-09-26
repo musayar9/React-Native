@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import {
   collection,
@@ -93,72 +93,74 @@ const HomePage = () => {
     dispatch(logout);
   };
   return (
-    <View style={styles.container}>
-      <TextInput
-        value={updateTheData}
-        onChangeText={setUpdateTheData}
-        placeholder="Update th data"
-        style={{
-          borderWidth: 1,
-          width: "50%",
-          paddingVertical: 10,
-          textAlign: "center",
-          marginBottom: 30,
-        }}
-      />
-
-      <Text style={styles.head}>HomePage Pagee</Text>
-      {data.map((item) => (
-        <Pressable
-          onPress={() => {
-            updateData(item.id), setIsSave(!isSave);
+    <ScrollView >
+      <View style={styles.container}>
+        <TextInput
+          value={updateTheData}
+          onChangeText={setUpdateTheData}
+          placeholder="Update th data"
+          style={{
+            borderWidth: 1,
+            width: "50%",
+            paddingVertical: 10,
+            textAlign: "center",
+            marginBottom: 30,
           }}
-          style={styles.dataContainer}
-          key={item.id}
-        >
-          <Text>{item?.id}</Text>
-          <Text>{item?.first}</Text>
-          <Text>{item?.lesson}</Text>
-          <Text>{item?.last}</Text>
-          <Text>{item?.content}</Text>
-        </Pressable>
-      ))}
-      <CustomButton
-        buttonText="Send Data"
-        buttonColor="blue"
-        pressedButtonColor="gray"
-        handleOnPress={() => {
-          sendData(), setIsSave(!isSave);
-        }}
-      />
-      <CustomButton
-        buttonText="Get Data"
-        buttonColor="#007bff"
-        pressedButtonColor="gray"
-        handleOnPress={getData}
-      />
+        />
 
-      <CustomButton
-        buttonText="Delete Data"
-        buttonColor="red"
-        pressedButtonColor="gray"
-        handleOnPress={() => deleteData("2")}
-      />
+        <Text style={styles.head}>HomePage Pagee</Text>
+        {data.map((item) => (
+          <Pressable
+            onPress={() => {
+              updateData(item.id), setIsSave(!isSave);
+            }}
+            style={styles.dataContainer}
+            key={item.id}
+          >
+            <Text>{item?.id}</Text>
+            <Text>{item?.first}</Text>
+            <Text>{item?.lesson}</Text>
+            <Text>{item?.last}</Text>
+            <Text>{item?.content}</Text>
+          </Pressable>
+        ))}
+        <CustomButton
+          buttonText="Send Data"
+          buttonColor="blue"
+          pressedButtonColor="gray"
+          handleOnPress={() => {
+            sendData(), setIsSave(!isSave);
+          }}
+        />
+        <CustomButton
+          buttonText="Get Data"
+          buttonColor="#007bff"
+          pressedButtonColor="gray"
+          handleOnPress={getData}
+        />
 
-      <CustomButton
-        buttonText="Update Data"
-        buttonColor="#0022aa55"
-        pressedButtonColor="gray"
-        handleOnPress={() => updateData("2")}
-      />
+        <CustomButton
+          buttonText="Delete Data"
+          buttonColor="red"
+          pressedButtonColor="gray"
+          handleOnPress={() => deleteData("2")}
+        />
 
-      <CustomButton
-        buttonText="Logout"
-        buttonColor="purple"
-        pressedButtonColor="gray"
-        handleOnPress={handleLogout}
-      />
-    </View>
+        <CustomButton
+          buttonText="Update Data"
+          buttonColor="#0022aa55"
+          pressedButtonColor="gray"
+          handleOnPress={() => updateData("2")}
+        />
+
+        <CustomButton
+          buttonText="Logout"
+          buttonColor="purple"
+          pressedButtonColor="gray"
+          handleOnPress={handleLogout}
+        />
+      </View>
+    </ScrollView>
   );
 };
 
@@ -170,6 +172,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#4b0097",
+    paddingVertical:20,
   },
   head: {
     color: "#fff",

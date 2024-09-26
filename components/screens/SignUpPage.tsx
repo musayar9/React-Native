@@ -1,21 +1,39 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, Pressable } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  Image,
+  Pressable,
+} from "react-native";
 import React, { useState } from "react";
 import CustomTextInput from "../CustomTextInput";
 import CustomButton from "../CustomButton";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { register } from "@/redux/userSlice";
+import Loading from "@/app/loading";
+import { ScrollView } from "react-native-gesture-handler";
 type RootStackParamList = {
   Login: undefined;
   SignUp: undefined;
 };
 
 type Props = NativeStackScreenProps<RootStackParamList, "SignUp">;
-const SignUpPage = ({navigation}:Props) => {
+const SignUpPage = ({ navigation }: Props) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const dispatch = useAppDispatch();
+  const { isLoading } = useAppSelector((state) => state.user);
+
+  const handleRegister = () => {
+    dispatch(register({ email, password }));
+  };
+  if (isLoading) return <Text>Loading.....</Text>;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.title}>
         <Image
           source={require("../../assets/images/signUp.png")}
@@ -53,15 +71,14 @@ const SignUpPage = ({navigation}:Props) => {
           buttonText="Sign Up"
           buttonColor="#5fa2ea"
           pressedButtonColor="#007bff"
-          handleOnPress={() => console.log(name, " ", email, " ", password)}
+          handleOnPress={handleRegister}
         />
-        
-        
-        <Pressable onPress={()=>navigation.navigate("Login")}>
-        <Text>Alreadt have an account? Login</Text>
+
+        <Pressable onPress={() => navigation.navigate("Login")}>
+          <Text>Already have an account? Login</Text>
         </Pressable>
       </View>
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 
@@ -70,8 +87,7 @@ export default SignUpPage;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+
     backgroundColor: "tomato",
   },
   sighUp: {
@@ -91,22 +107,23 @@ const styles = StyleSheet.create({
   title: {
     flex: 2,
     // paddingTop: 20,
-    width:"100%",
-    alignItems:"center",
-    justifyContent:"center"
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
   },
   signUpOptions: {
     flex: 2,
     width: "100%",
     alignItems: "center",
     marginVertical: 10,
-    justifyContent:"space-between"
-    
+    justifyContent: "space-between",
+    overflow: "scroll",
   },
 
   image: {
+    marginTop: 50,
     height: 100,
     width: 100,
-    marginBottom:20
+    marginBottom: 5,
   },
 });
