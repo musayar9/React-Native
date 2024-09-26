@@ -1,4 +1,11 @@
-import { Pressable, StyleSheet, Text, View, ScrollView } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  FlatList,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import {
   collection,
@@ -8,12 +15,14 @@ import {
   deleteDoc,
   updateDoc,
 } from "firebase/firestore";
+import Animated, { BounceIn, BounceOut, PinwheelIn } from "react-native-reanimated";
 import { db } from "@/firebaseConfig";
 import CustomButton from "../CustomButton";
 import { TextInput } from "react-native-gesture-handler";
 import { useDispatch } from "react-redux";
 import { logout } from "@/redux/userSlice";
 import { useAppDispatch } from "@/redux/hooks";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface LessonData {
   id: string; // Belgenin ID'si
@@ -92,24 +101,38 @@ const HomePage = () => {
   const handleLogout = () => {
     dispatch(logout);
   };
-  return (
-    <ScrollView >
-      <View style={styles.container}>
-        <TextInput
-          value={updateTheData}
-          onChangeText={setUpdateTheData}
-          placeholder="Update th data"
-          style={{
-            borderWidth: 1,
-            width: "50%",
-            paddingVertical: 10,
-            textAlign: "center",
-            marginBottom: 30,
-          }}
-        />
 
-        <Text style={styles.head}>HomePage Pagee</Text>
-        {data.map((item) => (
+  const renderItem = ({ item, index }: { item: LessonData, index:number }) => {
+    return (
+      <Animated.View
+        entering={BounceIn.duration(400).delay(100 * (index + 1) )}
+        exiting={BounceOut}
+        style={styles.flatListContainer}
+      >
+        <Text>{item?.first}</Text>
+        <Text>{item.last}</Text>
+        <Text>{item.lesson}</Text>
+        <Text>{item?.content}</Text>
+      </Animated.View>
+    );
+  };
+  return (
+    <SafeAreaView style={styles.container}>
+      <TextInput
+        value={updateTheData}
+        onChangeText={setUpdateTheData}
+        placeholder="Update th data"
+        style={{
+          borderWidth: 1,
+          width: "50%",
+          paddingVertical: 10,
+          textAlign: "center",
+          marginBottom: 30,
+        }}
+      />
+
+      <Text style={styles.head}>HomePage Pagee</Text>
+      {/* {data.map((item) => (
           <Pressable
             onPress={() => {
               updateData(item.id), setIsSave(!isSave);
@@ -123,44 +146,51 @@ const HomePage = () => {
             <Text>{item?.last}</Text>
             <Text>{item?.content}</Text>
           </Pressable>
-        ))}
-        <CustomButton
-          buttonText="Send Data"
-          buttonColor="blue"
-          pressedButtonColor="gray"
-          handleOnPress={() => {
-            sendData(), setIsSave(!isSave);
-          }}
-        />
-        <CustomButton
-          buttonText="Get Data"
-          buttonColor="#007bff"
-          pressedButtonColor="gray"
-          handleOnPress={getData}
-        />
+        ))} */}
 
-        <CustomButton
-          buttonText="Delete Data"
-          buttonColor="red"
-          pressedButtonColor="gray"
-          handleOnPress={() => deleteData("2")}
-        />
+      <Animated.FlatList entering={PinwheelIn}
+        data={data}
+        style={styles.flatList}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+      />
 
-        <CustomButton
-          buttonText="Update Data"
-          buttonColor="#0022aa55"
-          pressedButtonColor="gray"
-          handleOnPress={() => updateData("2")}
-        />
+      <CustomButton
+        buttonText="Send Data"
+        buttonColor="blue"
+        pressedButtonColor="gray"
+        handleOnPress={() => {
+          sendData(), setIsSave(!isSave);
+        }}
+      />
+      <CustomButton
+        buttonText="Get Data"
+        buttonColor="#007bff"
+        pressedButtonColor="gray"
+        handleOnPress={getData}
+      />
 
-        <CustomButton
-          buttonText="Logout"
-          buttonColor="purple"
-          pressedButtonColor="gray"
-          handleOnPress={handleLogout}
-        />
-      </View>
-    </ScrollView>
+      <CustomButton
+        buttonText="Delete Data"
+        buttonColor="red"
+        pressedButtonColor="gray"
+        handleOnPress={() => deleteData("2")}
+      />
+
+      <CustomButton
+        buttonText="Update Data"
+        buttonColor="#0022aa55"
+        pressedButtonColor="gray"
+        handleOnPress={() => updateData("2")}
+      />
+
+      <CustomButton
+        buttonText="Logout"
+        buttonColor="purple"
+        pressedButtonColor="gray"
+        handleOnPress={handleLogout}
+      />
+    </SafeAreaView>
   );
 };
 
@@ -172,7 +202,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#4b0097",
-    paddingVertical:20,
+    paddingVertical: 10,
   },
   head: {
     color: "#fff",
@@ -185,5 +215,23 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     margin: 5,
+  },
+
+  flatListContainer: {
+    borderWidth: 1,
+    borderColor: "#fff",
+    borderRadius: 8,
+    marginVertical: 5,
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#fff",
+  },
+
+  flatList: {
+    width: "90%",
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    backgroundColor: "#007bff",
   },
 });

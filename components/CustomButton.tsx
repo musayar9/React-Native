@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import React from "react";
-
+import Animated, { FadeIn } from "react-native-reanimated";
 interface CustomButtonProps {
   buttonText: string;
   handleOnPress: () => void;
@@ -14,8 +14,20 @@ const CustomButton = ({
   buttonColor,
   pressedButtonColor,
 }: CustomButtonProps) => {
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
   return (
-    <Pressable
+    // <AnimatedPressable exiting={FadeIn}
+    //   onPress={handleOnPress}
+    //   style={({ pressed }) => [
+    //     { backgroundColor: pressed ? pressedButtonColor : buttonColor },
+    //     styles.button,
+    //   ]}
+    // >
+    //   <Text style={styles.buttonText}>{buttonText}</Text>
+    // </AnimatedPressable>
+    
+        <Pressable 
       onPress={handleOnPress}
       style={({ pressed }) => [
         { backgroundColor: pressed ? pressedButtonColor : buttonColor },
