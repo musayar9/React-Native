@@ -1,6 +1,12 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getAuth, signInWithEmailAndPassword, User } from "firebase/auth";
-
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+  User,
+} from "firebase/auth";
+import { create } from "react-test-renderer";
 
 interface FirebaseUserWithToken extends User {
   stsTokenManager: {
@@ -8,9 +14,9 @@ interface FirebaseUserWithToken extends User {
   };
 }
 
- export const login = createAsyncThunk(
+export const login = createAsyncThunk(
   "user/login",
-  async ({ username, password }: { username: string; password: string  }) => {
+  async ({ username, password }: { username: string; password: string }) => {
     try {
       const auth = getAuth();
       const userCredential = await signInWithEmailAndPassword(
@@ -19,13 +25,15 @@ interface FirebaseUserWithToken extends User {
         password
       );
 
-       const user = userCredential.user as FirebaseUserWithToken;
-       const token = user.stsTokenManager.accessToken;
+      const user = userCredential.user as FirebaseUserWithToken;
+      const token = user.stsTokenManager.accessToken;
 
       const userData = {
         token,
         user: user,
       };
+
+      await AsyncStorage.setItem("userToken", token);
 
       return userData;
     } catch (error) {
@@ -35,17 +43,44 @@ interface FirebaseUserWithToken extends User {
   }
 );
 
-interface initialStateType {
+// kullanıcı otomatik giriş işlemleri
 
+export const autoLogin = createAsyncThunk("user/autoLogin", async () => {
+  try {
+    const token = await AsyncStorage.getItem("userToken");
+    console.log("tokne", token);
+    if (token) {
+      return token;
+    } else {
+      throw new Error("User Not Found");
+    }
+  } catch (error) {
+    throw error;
+  }
+});
+
+//kullanıcı çıkış işlemleri
+
+export const logout = createAsyncThunk("user/logout", async () => {
+  try {
+    const auth = getAuth();
+    await signOut(auth);
+    await AsyncStorage.removeItem("userToken");
+    return null;
+  } catch (error) {
+    throw error;
+  }
+});
+
+interface initialStateType {
   isLoading: boolean;
   isAuth: boolean;
   token: null | string;
   user: null | User;
-  error: null | string | undefined;
+  error: null | string | undefined | unknown;
 }
 
 const initialState: initialStateType = {
-
   isLoading: false,
   isAuth: false,
   token: null,
@@ -67,7 +102,6 @@ export const userSlice = createSlice({
     setIsLoading: (state, action) => {
       state.isLoading = action.payload;
     },
-    
   },
 
   extraReducers: (builder) => {
@@ -84,11 +118,35 @@ export const userSlice = createSlice({
       .addCase(login.rejected, (state, action) => {
         (state.isAuth = false), (state.isLoading = false);
         state.error = action.error.message;
+      })
+      .addCase(autoLogin.pending, (state) => {
+        state.isLoading = true;
+        state.isAuth = false;
+      })
+      .addCase(autoLogin.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isAuth = true;
+        state.token = action.payload;
+      })
+      .addCase(autoLogin.rejected, (state, action) => {
+        (state.isLoading = false), (state.isAuth = false);
+        state.token = null;
+      })
+      .addCase(logout.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(logout.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isAuth = false;
+        state.token = null;
+        state.error = null;
+      })
+      .addCase(logout.rejected, (state, action) => {
+        (state.isLoading = false), (state.error = action.payload);
       });
   },
 });
 
-export const {  setIsLoading } =
-  userSlice.actions;
+export const { setIsLoading } = userSlice.actions;
 
 export default userSlice.reducer;

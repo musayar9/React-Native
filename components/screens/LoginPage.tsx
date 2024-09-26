@@ -5,8 +5,8 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import CustomTextInput from "../CustomTextInput";
 import CustomButton from "../CustomButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { login, setIsLoading } from "@/redux/userSlice";
-import { useState } from "react";
+import { autoLogin, login, setIsLoading } from "@/redux/userSlice";
+import { useEffect, useState } from "react";
 
 type RootStackParamList = {
   Login: undefined;
@@ -17,9 +17,14 @@ type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 const LoginPage = ({ navigation }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const { isLoading, error } = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
 
+  //kullanıcı daha once giriş yaptıysa kontrol et ve otomatik giriş yap
+  useEffect(() => {
+    dispatch(autoLogin());
+  }, []);
   return (
     <View style={styles.container}>
       <Text style={styles.welcome}>Login</Text>
@@ -44,7 +49,9 @@ const LoginPage = ({ navigation }: Props) => {
         handleValue={password ?? ""}
         handlePlaceHolder={"Enter Your Password"}
       />
-      <Text>{error}</Text>
+      <Text>
+        {typeof error === "string" ? error : "Bilinmeyen bir hata oluştu"}
+      </Text>
       <CustomButton
         buttonText="Login"
         handleOnPress={() =>

@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
-import React, { useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
 import {
   collection,
   addDoc,
@@ -10,15 +10,29 @@ import {
 } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import CustomButton from "../CustomButton";
+import { TextInput } from "react-native-gesture-handler";
+import { useDispatch } from "react-redux";
+import { logout } from "@/redux/userSlice";
+import { useAppDispatch } from "@/redux/hooks";
+
 interface LessonData {
   id: string; // Belgenin ID'si
   first: string;
   last: string;
   lesson: number;
+  content: string;
 }
 const HomePage = () => {
   const [data, setData] = useState<LessonData[]>([]);
+  const [isSave, setIsSave] = useState(false);
+  const [updateTheData, setUpdateTheData] = useState("");
+  const dispatch = useAppDispatch();
   console.log(data);
+
+  useEffect(() => {
+    getData();
+  }, [isSave]);
+
   // SEND DATA TO FIREBASE
   const sendData = async () => {
     try {
@@ -51,39 +65,71 @@ const HomePage = () => {
   };
 
   // delete data from database
-  const deleteData = async () => {
-    await deleteDoc(doc(db, "reactNativeLesson", "1pEYPe9TKhYJjk2mrCkk"));
+  const deleteData = async (value: string) => {
+    try {
+      await deleteDoc(doc(db, "reactNativeLesson", value));
+      console.log("delete successfully");
+    } catch (error) {
+      console.log("delete error", error);
+    }
   };
 
   // update data from fırebase
 
-  const updateData = async () => {
+  const updateData = async (value: string) => {
     try {
-      const lessonData = doc(db, "reactNativeLesson", "EKUTmti6L3bIadq1M51b");
+      const lessonData = doc(db, "reactNativeLesson", value);
 
       // Set the "capital" field of the city 'DC'
       await updateDoc(lessonData, {
-        lesson: 145,
+        content: updateTheData,
       });
     } catch (error) {
       console.log("error", error);
     }
   };
+
+  const handleLogout = () => {
+    dispatch(logout);
+  };
   return (
     <View style={styles.container}>
-      <Text style={styles.head}>HomePage Page</Text>
+      <TextInput
+        value={updateTheData}
+        onChangeText={setUpdateTheData}
+        placeholder="Update th data"
+        style={{
+          borderWidth: 1,
+          width: "50%",
+          paddingVertical: 10,
+          textAlign: "center",
+          marginBottom: 30,
+        }}
+      />
+
+      <Text style={styles.head}>HomePage Pagee</Text>
       {data.map((item) => (
-        <View key={item.id}>
+        <Pressable
+          onPress={() => {
+            updateData(item.id), setIsSave(!isSave);
+          }}
+          style={styles.dataContainer}
+          key={item.id}
+        >
+          <Text>{item?.id}</Text>
           <Text>{item?.first}</Text>
           <Text>{item?.lesson}</Text>
           <Text>{item?.last}</Text>
-        </View>
+          <Text>{item?.content}</Text>
+        </Pressable>
       ))}
       <CustomButton
         buttonText="Send Data"
         buttonColor="blue"
         pressedButtonColor="gray"
-        handleOnPress={sendData}
+        handleOnPress={() => {
+          sendData(), setIsSave(!isSave);
+        }}
       />
       <CustomButton
         buttonText="Get Data"
@@ -96,14 +142,21 @@ const HomePage = () => {
         buttonText="Delete Data"
         buttonColor="red"
         pressedButtonColor="gray"
-        handleOnPress={deleteData}
+        handleOnPress={() => deleteData("2")}
       />
 
       <CustomButton
         buttonText="Update Data"
         buttonColor="#0022aa55"
         pressedButtonColor="gray"
-        handleOnPress={updateData}
+        handleOnPress={() => updateData("2")}
+      />
+
+      <CustomButton
+        buttonText="Logout"
+        buttonColor="purple"
+        pressedButtonColor="gray"
+        handleOnPress={handleLogout}
       />
     </View>
   );
@@ -120,5 +173,14 @@ const styles = StyleSheet.create({
   },
   head: {
     color: "#fff",
+  },
+  dataContainer: {
+    gap: 5,
+    borderWidth: 1,
+    borderColor: "#fff",
+    borderStyle: "solid",
+    padding: 10,
+    borderRadius: 5,
+    margin: 5,
   },
 });

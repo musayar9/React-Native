@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { Provider } from "react-redux";
 import { store } from "@/redux/store";
-
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import RootNavigation from "@/navigation/RootNavigation";
 import  "@/firebaseConfig";
 type HomeScreenProps = {
@@ -15,15 +15,17 @@ type HomeScreenProps = {
 const Stack = createNativeStackNavigator<HomeScreenProps>();
 const HomeScreen = () => {
   return (
-    <Provider store={store}>
-      {/* <NavigationContainer independent={true}>
+    <GestureHandlerRootView>
+      <Provider store={store}>
+        {/* <NavigationContainer independent={true}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Login" component={LoginPage} />
           <Stack.Screen name="SignUp" component={SignUpPage} />
         </Stack.Navigator>
       </NavigationContainer> */}
-      <RootNavigation />
-    </Provider>
+        <RootNavigation />
+      </Provider>
+    </GestureHandlerRootView>
   );
 };
 
