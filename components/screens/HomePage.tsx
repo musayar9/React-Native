@@ -15,63 +15,47 @@ import {
   deleteDoc,
   updateDoc,
 } from "firebase/firestore";
-import Animated, { BounceIn, BounceOut, PinwheelIn } from "react-native-reanimated";
+import Animated, {
+  BounceIn,
+  BounceOut,
+  PinwheelIn,
+  useSharedValue,
+} from "react-native-reanimated";
 import { db } from "@/firebaseConfig";
 import CustomButton from "../CustomButton";
 import { TextInput } from "react-native-gesture-handler";
 import { useDispatch } from "react-redux";
 import { logout } from "@/redux/userSlice";
-import { useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { SafeAreaView } from "react-native-safe-area-context";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import Entypo from "@expo/vector-icons/Entypo";
+import {
+  getAllData,
+  LessonData,
+  setUserInput,
+  saveData,
+} from "@/redux/dataSlice";
 
-interface LessonData {
-  id: string; // Belgenin ID'si
-  first: string;
-  last: string;
-  lesson: number;
-  content: string;
-}
 const HomePage = () => {
-  const [data, setData] = useState<LessonData[]>([]);
+  const { data, isLoading, userInput, isSaved } = useAppSelector((state) => state.data);
+  // const [data, setData] = useState<LessonData[]>([]);
   const [isSave, setIsSave] = useState(false);
   const [updateTheData, setUpdateTheData] = useState("");
   const dispatch = useAppDispatch();
   console.log(data);
 
+  // useEffect(() => {
+  //   getData();
+  // }, [isSave]);
+
   useEffect(() => {
-    getData();
-  }, [isSave]);
+    dispatch(getAllData());
+  }, [isSaved]);
 
   // SEND DATA TO FIREBASE
-  const sendData = async () => {
-    try {
-      const docRef = await addDoc(collection(db, "reactNativeLesson"), {
-        first: "Learn React Native",
-        last: "React Native tutorial for Beginner",
-        lesson: 111,
-      });
-      console.log("Document written with ID: ", docRef.id);
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
-  };
 
   // GET DATA FROM FIREBASE
-  const getData = async () => {
-    const fetchedData: LessonData[] = []; // Geçici bir dizi oluştur
-    try {
-      const querySnapshot = await getDocs(collection(db, "reactNativeLesson"));
-
-      querySnapshot.forEach((doc) => {
-        fetchedData.push({ id: doc.id, ...doc.data() } as LessonData); // Diziyi doldur
-        // setData([...data, doc.data()])
-      });
-
-      setData(fetchedData);
-    } catch (error) {
-      console.log("error", error);
-    }
-  };
 
   // delete data from database
   const deleteData = async (value: string) => {
@@ -101,95 +85,70 @@ const HomePage = () => {
   const handleLogout = () => {
     dispatch(logout);
   };
+  
+  
+  
 
-  const renderItem = ({ item, index }: { item: LessonData, index:number }) => {
+  const renderItem = ({ item, index }: { item: LessonData; index: number }) => {
     return (
       <Animated.View
-        entering={BounceIn.duration(400).delay(100 * (index + 1) )}
+        entering={BounceIn.duration(400).delay(100 * (index + 1))}
         exiting={BounceOut}
         style={styles.flatListContainer}
       >
-        <Text>{item?.first}</Text>
-        <Text>{item.last}</Text>
-        <Text>{item.lesson}</Text>
-        <Text>{item?.content}</Text>
+        <Pressable
+          style={styles.iconContainer}
+          onPress={() => deleteData(item.id)}
+        >
+          <MaterialIcons name="check-circle" size={24} color="black" />
+          <Entypo name="circle" size={24} color="black" />
+        </Pressable>
+
+        <View style={styles.itemContainer}>
+          <Text>{item.content}</Text>
+        </View>
       </Animated.View>
     );
   };
+
+  // const sharedData = useSharedValue<LessonData[]>(data || []);
+  if (isLoading) return <View style={styles.loadingContainer}>
+  <Text>Loading</Text>
+  </View>
   return (
     <SafeAreaView style={styles.container}>
-      <TextInput
-        value={updateTheData}
-        onChangeText={setUpdateTheData}
-        placeholder="Update th data"
-        style={{
-          borderWidth: 1,
-          width: "50%",
-          paddingVertical: 10,
-          textAlign: "center",
-          marginBottom: 30,
-        }}
-      />
+      <Text style={styles.head}>TODO List</Text>
 
-      <Text style={styles.head}>HomePage Pagee</Text>
-      {/* {data.map((item) => (
-          <Pressable
-            onPress={() => {
-              updateData(item.id), setIsSave(!isSave);
-            }}
-            style={styles.dataContainer}
-            key={item.id}
-          >
-            <Text>{item?.id}</Text>
-            <Text>{item?.first}</Text>
-            <Text>{item?.lesson}</Text>
-            <Text>{item?.last}</Text>
-            <Text>{item?.content}</Text>
-          </Pressable>
-        ))} */}
-
-      <Animated.FlatList entering={PinwheelIn}
-        data={data}
+      <Animated.FlatList
+        entering={PinwheelIn}
+        data={data || []}
         style={styles.flatList}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
       />
 
-      <CustomButton
-        buttonText="Send Data"
-        buttonColor="blue"
-        pressedButtonColor="gray"
-        handleOnPress={() => {
-          sendData(), setIsSave(!isSave);
-        }}
-      />
-      <CustomButton
+      {/* <CustomButton
         buttonText="Get Data"
         buttonColor="#007bff"
         pressedButtonColor="gray"
         handleOnPress={getData}
-      />
-
-      <CustomButton
-        buttonText="Delete Data"
-        buttonColor="red"
-        pressedButtonColor="gray"
-        handleOnPress={() => deleteData("2")}
-      />
-
-      <CustomButton
-        buttonText="Update Data"
-        buttonColor="#0022aa55"
-        pressedButtonColor="gray"
-        handleOnPress={() => updateData("2")}
-      />
-
-      <CustomButton
-        buttonText="Logout"
-        buttonColor="purple"
-        pressedButtonColor="gray"
-        handleOnPress={handleLogout}
-      />
+      /> */}
+      <View style={styles.userInputContainer}>
+        <TextInput
+          value={userInput}
+          onChangeText={(text) => dispatch(setUserInput(text))}
+          placeholder="App Todo"
+          style={styles.textInput}
+          placeholderTextColor={"white"}
+        />
+        <CustomButton
+          buttonText="Save"
+          buttonColor="#007bff"
+          pressedButtonColor="gray"
+          handleOnPress={() => dispatch(saveData({userInput}))}
+          flexValue={1}
+        />
+      </View>
     </SafeAreaView>
   );
 };
@@ -218,20 +177,56 @@ const styles = StyleSheet.create({
   },
 
   flatListContainer: {
-    borderWidth: 1,
+    borderBottomWidth: 0.3,
     borderColor: "#fff",
     borderRadius: 8,
     marginVertical: 5,
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
-    color: "#fff",
+    justifyContent: "space-between",
+    flexDirection: "row",
   },
 
   flatList: {
     width: "90%",
+
     borderRadius: 12,
-    paddingHorizontal: 10,
-    backgroundColor: "#007bff",
+    padding: 10,
   },
+
+  itemContainer: {
+    flex: 5,
+    marginLeft: 10,
+  },
+  itemTitle: {
+    fontWeight: "bold",
+  },
+  iconContainer: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: 4,
+  },
+
+  textInput: {
+    borderWidth: 0.3,
+    flex: 3,
+    paddingVertical: 10,
+    textAlign: "center",
+    marginVertical: 10,
+    borderRadius: 10,
+    borderColor: "#fff",
+    color: "#fff",
+    marginRight: 5,
+  },
+  userInputContainer: {
+    width: "90%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  loadingContainer:{
+  alignContent:"center",
+  justifyContent:"center"
+  
+  }
 });

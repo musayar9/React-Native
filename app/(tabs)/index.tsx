@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -6,7 +6,9 @@ import { Provider } from "react-redux";
 import { store } from "@/redux/store";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import RootNavigation from "@/navigation/RootNavigation";
-import  "@/firebaseConfig";
+import "@/firebaseConfig";
+import { useAppDispatch } from "@/redux/hooks";
+import { getAllData } from "@/redux/dataSlice";
 type HomeScreenProps = {
   Login: undefined;
   SignUp: undefined;
@@ -14,6 +16,8 @@ type HomeScreenProps = {
 
 const Stack = createNativeStackNavigator<HomeScreenProps>();
 const HomeScreen = () => {
+
+
   return (
     <GestureHandlerRootView>
       <Provider store={store}>

@@ -6,6 +6,7 @@ interface CustomButtonProps {
   handleOnPress: () => void;
   buttonColor: string;
   pressedButtonColor: string;
+  flexValue:number
 }
 
 const CustomButton = ({
@@ -13,9 +14,9 @@ const CustomButton = ({
   handleOnPress,
   buttonColor,
   pressedButtonColor,
+  flexValue,
 }: CustomButtonProps) => {
-
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
+  const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
   return (
     // <AnimatedPressable exiting={FadeIn}
     //   onPress={handleOnPress}
@@ -26,11 +27,14 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
     // >
     //   <Text style={styles.buttonText}>{buttonText}</Text>
     // </AnimatedPressable>
-    
-        <Pressable 
+
+    <Pressable
       onPress={handleOnPress}
       style={({ pressed }) => [
-        { backgroundColor: pressed ? pressedButtonColor : buttonColor },
+        {
+          backgroundColor: pressed ? pressedButtonColor : buttonColor,
+          flex: flexValue,
+        },
         styles.button,
       ]}
     >
@@ -48,7 +52,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 10,
-    marginTop: 20,
+   
   },
   buttonText: {
     color: "#fff",

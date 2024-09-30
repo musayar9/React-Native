@@ -11,7 +11,7 @@ import Config from "react-native-config";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDzSYOUL0XNz30Kr9YuCy1e9VZhiWsBpzY",
+  apiKey:" AIzaSyDzSYOUL0XNz30Kr9YuCy1e9VZhiWsBpzY",
   authDomain: "test-app-6afeb.firebaseapp.com",
   projectId: "test-app-6afeb",
   storageBucket: "test-app-6afeb.appspot.com",
